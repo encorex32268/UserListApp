@@ -9,16 +9,16 @@ import retrofit2.http.Query
 
 interface UserApi {
 
-    @GET("api/v2/users")
+    @GET("users")
     suspend fun getRandomUser() : Response<UserDto>
 
-    @GET("api/v2/users")
+    @GET("users")
     suspend fun getUserBySize(
         @Query("size") size : String,
     ) : Response<List<UserDto>>
 
     companion object{
-        const val BASE_URL = "https://random-data-api.com/"
+        const val BASE_URL = "https://random-data-api.com/api/v2/"
     }
 
 }
