@@ -23,26 +23,32 @@ class UserViewModel @Inject constructor(
 ) : ViewModel(){
 
     var state by mutableStateOf(
-        listOf<User>()
+       UserState()
     )
-    private val _uiEvent = Channel<UiEvent>()
-    var uiEvent = _uiEvent.receiveAsFlow()
+
     init {
         getDataBySize(20)
     }
-    fun getDataBySize(size : Int = 20){
+    private fun getDataBySize(size : Int = 20){
         viewModelScope.launch {
             userRepository.getUserBySize(size = size.toString()).collectLatest {
                 when(it){
-                    is Resource.Loading->{}
+                    is Resource.Loading->{
+                        state = state.copy(
+                            isLoading = true
+                        )
+                    }
                     is Resource.Error->{
-                        Log.d("TAG", "getDataBySize: ${it.message}")
-                        _uiEvent.send(UiEvent.APIError)
+                        state = state.copy(
+                            isLoading = false
+                        )
                     }
                     is Resource.Success->{
                         it.data?.let {
-                            state = it
-                            Log.d("TAG", "getDataBySize: ${it}")
+                            state = state.copy(
+                                users = it,
+                                isLoading = false
+                            )
                         }
                     }
                 }
